@@ -103,6 +103,6 @@ const sampleData = {
       banner: null,
     },
   ],
-};
+}
 
-export default sampleData;
+export default sampleData

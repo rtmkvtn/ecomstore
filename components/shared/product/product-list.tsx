@@ -1,6 +1,14 @@
 import ProductCard from '@/components/shared/product/product-card'
 
-const ProductList = ({ data, title, limit }: { data: any, title?: string, limit?: number }) => {
+const ProductList = ({
+  data,
+  title,
+  limit,
+}: {
+  data: any
+  title?: string
+  limit?: number
+}) => {
   const limitedData = limit ? data.slice(0, limit) : data
 
   return (
@@ -14,9 +22,9 @@ const ProductList = ({ data, title, limit }: { data: any, title?: string, limit?
         </div>
       ) : (
         <div>
-        <p>No products found</p>
+          <p>No products found</p>
         </div>
-        )}
+      )}
     </div>
   )
 }

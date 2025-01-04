@@ -1,14 +1,21 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import Link from 'next/link'
 import Image from 'next/image'
-import ProductPrice from '@/components/shared/product/product-price'
+import Link from 'next/link'
 
-const ProductCard = ({ product }: {product: any}) => {
+import ProductPrice from '@/components/shared/product/product-price'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+
+const ProductCard = ({ product }: { product: any }) => {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="p-0 items-center">
         <Link href={`/product/${product.slug}`}>
-          <Image src={product.images[0]} alt={product.name} height={300} width={300} priority />
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            height={300}
+            width={300}
+            priority
+          />
         </Link>
       </CardHeader>
       <CardContent className="p-4 grid gap-4">
