@@ -2,7 +2,6 @@ import { compareSync } from 'bcrypt-ts-edge'
 import NextAuth from 'next-auth'
 import type { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 import { prisma } from '@/db/prisma'
@@ -94,12 +93,12 @@ export const config = {
         const sessionCartId = crypto.randomUUID()
 
         // Clone request headers
-        const newRequestheaders = new Headers(request.headers)
+        const newRequestHeaders = new Headers(request.headers)
 
         // Create new response and add the new headers
         const response = NextResponse.next({
           request: {
-            headers: newRequestheaders,
+            headers: newRequestHeaders,
           },
         })
 
