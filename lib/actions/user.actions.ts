@@ -1,11 +1,13 @@
 'use server'
 
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import { z } from 'zod'
 
 import { auth, signIn, signOut } from '@/auth'
 import { prisma } from '@/db/prisma'
 import { formatError } from '@/lib/utils'
 import {
+  paymentMethodSchema,
   shippingAddressSchema,
   signInFormSchema,
   signUpFormSchema,
@@ -124,5 +126,35 @@ export async function updateUserAddress(data: ShippingAddress) {
     }
   } catch (e) {
     return { success: false, message: formatError(e) }
+  }
+}
+
+// Update user's payment method
+export async function updateUserPaymentMethod(
+  data: z.infer<typeof paymentMethodSchema>
+) {
+  try {
+    const session = await auth()
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    })
+
+    if (!currentUser) {
+      throw new Error('Could not find user')
+    }
+
+    const paymentMethod = paymentMethodSchema.parse(data)
+
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { paymentMethod: paymentMethod.type },
+    })
+
+    return { success: true, message: 'Payment method updated successfully' }
+  } catch (e) {
+    return {
+      success: false,
+      message: formatError(e),
+    }
   }
 }
