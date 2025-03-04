@@ -17,6 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getOrderSummary } from '@/lib/actions/order.actions'
+import { requireAdmin } from '@/lib/auth-guard'
 import { formatCurrency, formatDateTime, formatNumber } from '@/lib/utils'
 
 export const metadata: Metadata = {
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
 }
 
 const AdminOverviewPage = async () => {
+  await requireAdmin()
+
   const session = await auth()
   if (session?.user?.role !== 'admin') {
     throw new Error('User is not authorized')
