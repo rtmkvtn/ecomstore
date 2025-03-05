@@ -152,14 +152,14 @@ export async function createPayPalOrder(orderId: string) {
 // Approve PayPal order and update order to paid
 export async function approvePayPalOrder(
   orderId: string,
-  data: { orderId: string } // PayPal order data
+  data: { orderID: string } // PayPal order data
 ) {
   try {
     // Get order from the database
     const order = await prisma.order.findFirst({ where: { id: orderId } })
     if (!order) throw new Error('Order not found')
 
-    const captureData = await paypal.capturePayment(data.orderId)
+    const captureData = await paypal.capturePayment(data.orderID)
     if (
       !captureData ||
       captureData.id !== (order.paymentResult as PaymentResult)?.id ||
@@ -344,5 +344,69 @@ export async function getAllOrders({
   return {
     data,
     totalPages: Math.ceil(dataCount / limit),
+  }
+}
+
+// Delete an order
+export async function deleteOrder(id: string) {
+  try {
+    await prisma.order.delete({ where: { id } })
+
+    revalidatePath(`/admin/orders`)
+
+    return {
+      success: true,
+      message: 'Order deleted',
+    }
+  } catch (e) {
+    return {
+      success: false,
+      message: formatError(e),
+    }
+  }
+}
+
+// Update COD order to paid
+export async function updateOrderToPaidCOD(orderId: string) {
+  try {
+    await updateOrderToPaid({ orderId })
+
+    revalidatePath(`/order/${orderId}`)
+
+    return {
+      success: true,
+      message: 'Order marked as paid',
+    }
+  } catch (e) {
+    return {
+      success: false,
+      message: formatError(e),
+    }
+  }
+}
+
+// Update COD order to delivered
+export async function deliverOrder(orderId: string) {
+  try {
+    const order = await prisma.order.findFirst({ where: { id: orderId } })
+    if (!order) throw new Error('Order not found')
+    if (!order.isPaid) throw new Error('Order is not paid')
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { isDelivered: true, deliveredAt: new Date() },
+    })
+
+    revalidatePath(`/order/${orderId}`)
+
+    return {
+      success: true,
+      message: 'Order marked as delivered',
+    }
+  } catch (e) {
+    return {
+      success: false,
+      message: formatError(e),
+    }
   }
 }
